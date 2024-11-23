@@ -11,7 +11,6 @@ class UserService {
     constructor({ username, password, image }) {
         this.username = username;
         this.password = password;
-        this.image = image
     }
     async add() {
         if (!this.username || !this.password) {
@@ -53,7 +52,7 @@ class UserService {
         return { user: result, token: token }
     }
     async getById(id) {
-        return await User.findByPk(id,{attributes:['id','username','image']});
+        return await User.findByPk(id,{attributes:['id','username']});
     }
     async getUsersNotInthisGroup(users) {
         return await User.findAll({ where: { id: { [Op.notIn]: users } }, attributes: ['id', 'username'] });

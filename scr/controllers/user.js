@@ -11,18 +11,12 @@ const UserGroupPremissionsService = require("../services/userGroupPermission");
 module.exports = {
     add: async (req, res) => {
         const { body } = req;
-        if(req.file)
-            body.image = req.file.filename;
         const result = await new UserService({ ...body }).add();
         responseSender(res, result);
     },
     update: async (req, res) => {
         const id = req.userId;
         const { body } = req;
-        console.log(body);
-        
-        if(req.file)
-            body.image = req.file.filename;
         const user = await new UserService({ ...body }).update(id);
         updateResponseSender(res, 'user');
     },

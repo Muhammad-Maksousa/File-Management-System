@@ -4,11 +4,11 @@ const { verifyUserToken, verifyAdminToken } = require("../middleware/auth");
 const apiHandler = require("../helpers/wrappers/api-handler");
 const upload = require('../helpers/uploadUserImage');
 
-router.post("/", upload.single("image"), apiHandler(controller.add));//http://localhost:8080/images/users/1732182221593.png
+router.post("/", apiHandler(controller.add));//http://localhost:8080/images/users/1732182221593.png
 router.post("/login", apiHandler(controller.login));
 router.post("/remove", apiHandler(verifyUserToken), apiHandler(controller.removeUserFromMyGroup));
 
-router.put("/", upload.single("image"), apiHandler(verifyUserToken), apiHandler(controller.update));
+router.put("/", apiHandler(verifyUserToken), apiHandler(controller.update));
 
 router.get("/profile", apiHandler(verifyUserToken), apiHandler(controller.getById));
 router.get("/groupInvitations", apiHandler(verifyUserToken), apiHandler(controller.getMyGroupInvitations));

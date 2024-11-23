@@ -13,10 +13,6 @@ const User = sequelize.define("User", {
         set(value) {
             this.setDataValue('password', bcrypt.hashSync(value, 8));
         }
-    },
-    image: {
-        type: DataTypes.STRING,
-        allowNull:true
     }
 });
 module.exports = User;
