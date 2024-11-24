@@ -18,6 +18,11 @@ class UserGroupPremissionsService {
                 groupId: this.groupId,
                 userId: this.userId,
                 permission: 2
+            },
+            {
+                groupId: this.groupId,
+                userId: this.userId,
+                permission: 3
             }
         ]
         return await UserGroupPremissions.bulkCreate(userGroupPremissions);
@@ -26,6 +31,7 @@ class UserGroupPremissionsService {
         return await UserGroupPremissions.destroy({ where: { [Op.and]: [{ userId: this.userId }, { groupId: this.groupId }] } });
     }
     async restrict() {
+        await UserGroupPremissions.destroy({ where: { [Op.and]: [{ userId: this.userId }, { groupId: this.groupId }, { permission: 3 }] } });
         return await UserGroupPremissions.destroy({ where: { [Op.and]: [{ userId: this.userId }, { groupId: this.groupId }, { permission: 1 }] } });
     }
     async unRestrict() {

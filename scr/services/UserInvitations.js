@@ -19,7 +19,7 @@ class UserInvitationsService {
         });
     }
     async getMyInvitaions() {
-        return await UserInvitations.findAll({ where: { userId: this.userId },attributes:['id','message'], include: { model: Group, attributes: ['id', 'name', 'image'], include: { model: User, attributes: ['id', 'username'] } } });
+        return await UserInvitations.findAll({ where: { userId: this.userId },attributes:['id','message'], include: { model: Group, attributes: ['id', 'name', 'image'], include: { model: User, attributes: ['id', 'email','firstName','lastName'] } } });
     }
     async getInvitation(id) {
         return await UserInvitations.findByPk(id);

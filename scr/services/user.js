@@ -8,32 +8,35 @@ const { Op } = require("sequelize");
 
 
 class UserService {
-    constructor({ username, password, image }) {
-        this.username = username;
+    constructor({ email,firstName,lastName, password }) {
+        this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.password = password;
     }
     async add() {
-        if (!this.username || !this.password) {
+        if (!this.email || !this.password) {
             throw new CustomError(errors.You_Should_fill_All_The_Filds)
         }
         return await User.create({
-            username: this.username,
-            password: this.password,
-            image: this.image
+            email:this.email,
+            firstName: this.firstName,
+            lastName:this.lastName,
+            password: this.password
         });
     }
     async update(id) {
         return await User.update({
             password: this.password,
-            image: this.image
+            firstName:this.firstName,
+            lastName:this.lastName
         }, { where: { id: id } });
     }
     async login() {
-        if (!this.username || !this.password)
+        if (!this.email || !this.password)
             throw new CustomError(errors.You_Should_fill_All_The_Filds);
 
-        const user = await User.findOne({ where: { username: this.username } });
-        //const user = await User.findOne({ where: { username: this.username }, include: [{model:Wallet,model:StorageAdmin}] });
+        const user = await User.findOne({ where: { email: this.email } });
         if (!user)
             throw new CustomError(errors.Entity_Not_Found);
 
@@ -41,21 +44,23 @@ class UserService {
         if (!passwordIsValid)
             throw new CustomError(errors.Wrong_Password);
 
-        let token = jwt.sign({ userId: user.id }, secretKey, {
+        let token = jwt.sign({ userId: user.id ,isAdmin:user.isAdmin}, secretKey, {
             expiresIn: 86400 * 720 // 2 years
         });
         let result = {
-            username:user.username,
-            image:user.image,
-            id:user.id
+            id:user.id,
+            email:user.email,
+            firstName:user.firstName,
+            lastName:user.lastName,
+            isAdmin:user.isAdmin
         }
         return { user: result, token: token }
     }
     async getById(id) {
-        return await User.findByPk(id,{attributes:['id','username']});
+        return await User.findByPk(id,{attributes:['id','email','firstName','lastName']});
     }
     async getUsersNotInthisGroup(users) {
-        return await User.findAll({ where: { id: { [Op.notIn]: users } }, attributes: ['id', 'username'] });
+        return await User.findAll({ where: { id: { [Op.notIn]: users } }, attributes: ['id','email','firstName','lastName'] });
     }
 }
 module.exports = UserService;

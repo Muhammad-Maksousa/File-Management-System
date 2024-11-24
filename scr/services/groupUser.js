@@ -29,7 +29,7 @@ class GroupUserService {
         return result;
     }
     async getAllUsersOfGroup(groupId) {
-        return await GroupUser.findAll({ where: { groupId: groupId }, attributes:[],include: { model: User, attributes: ['id', 'username'], include: { model: UserGroupPermissions ,attributes:['permission']} } });
+        return await GroupUser.findAll({ where: { groupId: groupId }, attributes:[],include: { model: User, attributes: ['id', 'email','firstName','lastName'], include: { model: UserGroupPermissions ,attributes:['permission']} } });
     }
     async removeUserFromMyGroup() {
         return await GroupUser.destroy({ where: { [Op.and]: [{ userId: this.userId }, { groupId: this.groupId }] } });
