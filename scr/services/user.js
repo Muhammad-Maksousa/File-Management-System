@@ -57,7 +57,7 @@ class UserService {
         return { user: result, token: token }
     }
     async getById(id) {
-        return await User.findByPk(id,{attributes:['id','email','firstName','lastName']});
+        return await User.findByPk(id,{attributes:['id','email','firstName','lastName','isAdmin']});
     }
     async getUsersNotInthisGroup(users) {
         return await User.findAll({ where: { id: { [Op.notIn]: users } }, attributes: ['id','email','firstName','lastName'] });

@@ -27,7 +27,9 @@ module.exports = {
     },
     getById: async (req, res) => {
         const id = req.userId;
-        const result = await new UserService({}).getById(id);
+        const { isAdmin } = req;
+        const data = await new UserService({}).getById(id);
+        let result = { data: data, isAdmin: isAdmin };
         responseSender(res, result);
     },
     getMyGroupInvitations: async (req, res) => {
@@ -52,9 +54,11 @@ module.exports = {
     },
     getMyGroups: async (req, res) => {
         const { userId } = req;
+        const { isAdmin } = req;
         const myGroups = await new GroupUserService({ userId }).getMyGroups();
         const public = await new GroupService({}).getPublicGroups();
         let result = {
+            isAdmin:isAdmin,
             myGroups: myGroups,
             publicGroups: public
         };
@@ -62,15 +66,19 @@ module.exports = {
     },
     usersToInvite: async (req, res) => {
         const { userId } = req;
+        const { isAdmin } = req;
         const { groupId } = req.params;
         let users = await new GroupUserService({}).getAllUsersOfGroupRaw(groupId);
         users.push(userId);
-        const result = await new UserService({}).getUsersNotInthisGroup(users);
+        const data = await new UserService({}).getUsersNotInthisGroup(users);
+        let result = { isAdmin: isAdmin,data: data };
         responseSender(res, result);
     },
     getMyOwnGroups: async (req, res) => {
         const ownerId = req.userId;
-        const result = await new GroupService({ ownerId }).getMyOwnGroups();
+        const { isAdmin } = req;
+        const data = await new GroupService({ ownerId }).getMyOwnGroups();
+        let result = { isAdmin: isAdmin,data: data };
         responseSender(res, result);
     },
     removeUserFromMyGroup: async (req, res) => {

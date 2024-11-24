@@ -16,7 +16,7 @@ verifyUserToken = async (req, res, next) => {
         if (!user)
             throw new CustomError(errors.Not_Authorized);
         req.userId = user.id;
-        req.userRole = user.role;
+        req.isAdmin = user.isAdmin;
         next();
     });
 };

@@ -12,7 +12,7 @@ app.use(logger('dev'));
 //allow the client to access the server
 app.options('*', cors());
 //to synchronizing all models at once
-sequelize.sync({ alter: true }).then((_) => {
+sequelize.sync({ alter: false }).then((_) => {
     console.log("connected to db successfully");
     app.use(express.urlencoded({ extended: false }));
     // cors policies

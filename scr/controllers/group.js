@@ -10,7 +10,7 @@ module.exports = {
     add: async (req, res) => {
         let { body } = req;
         body.ownerId = req.userId;
-        if(req.file)
+        if (req.file)
             body.image = req.file.filename;
         const result = await new GroupService({ ...body }).add();
         responseSender(res, result);
@@ -19,7 +19,7 @@ module.exports = {
         const { groupId } = req.params;
         const { userId } = req;
         const { body } = req;
-        if(req.file)
+        if (req.file)
             body.image = req.file.filename;
         let validOwner = await new GroupService({}).isHeGroupOwner(userId, groupId);
 
@@ -36,9 +36,10 @@ module.exports = {
     },
     getOne: async (req, res) => {
         const { userId } = req;
+        const { isAdmin } = req;
         const { groupId } = req.params;
         const data = await new GroupService({}).getOne(groupId);
-        let result = { groupOwner: false, data: data }
+        let result = { groupOwner: false, isAdmin: isAdmin, data: data };
         const isHeGroupOwner = await new GroupService({}).isHeGroupOwner(groupId, userId);
         if (isHeGroupOwner)
             result.groupOwner = true;
@@ -66,9 +67,10 @@ module.exports = {
     },
     usersOfGroup: async (req, res) => {
         const { userId } = req;
+        const { isAdmin } = req;
         const { groupId } = req.params;
         const data = await new GroupUserService({}).getAllUsersOfGroup(groupId);
-        let result = { groupOwner: false, data: data }
+        let result = { groupOwner: false, isAdmin: isAdmin, data: data };
         const isHeGroupOwner = await new GroupService({}).isHeGroupOwner(groupId, userId);
         if (isHeGroupOwner)
             result.groupOwner = true;
