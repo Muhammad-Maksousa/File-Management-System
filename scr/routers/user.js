@@ -2,7 +2,6 @@ const router = require("express").Router();
 const controller = require("../controllers/user");
 const { verifyUserToken, verifyAdminToken } = require("../middleware/auth");
 const apiHandler = require("../helpers/wrappers/api-handler");
-const upload = require('../helpers/uploadUserImage');
 
 router.post("/", apiHandler(controller.add));//http://localhost:8080/images/users/1732182221593.png
 router.post("/login", apiHandler(controller.login));

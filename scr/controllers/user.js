@@ -55,10 +55,13 @@ module.exports = {
     getMyGroups: async (req, res) => {
         const { userId } = req;
         const { isAdmin } = req;
+        let ownerId = userId;
         const myGroups = await new GroupUserService({ userId }).getMyGroups();
         const public = await new GroupService({}).getPublicGroups();
+        const myOwnGroups = await new GroupService({ ownerId }).getMyOwnGroups();
         let result = {
-            isAdmin:isAdmin,
+            isAdmin: isAdmin,
+            myOwnGroups: myOwnGroups,
             myGroups: myGroups,
             publicGroups: public
         };
@@ -71,14 +74,14 @@ module.exports = {
         let users = await new GroupUserService({}).getAllUsersOfGroupRaw(groupId);
         users.push(userId);
         const data = await new UserService({}).getUsersNotInthisGroup(users);
-        let result = { isAdmin: isAdmin,data: data };
+        let result = { isAdmin: isAdmin, data: data };
         responseSender(res, result);
     },
     getMyOwnGroups: async (req, res) => {
         const ownerId = req.userId;
         const { isAdmin } = req;
         const data = await new GroupService({ ownerId }).getMyOwnGroups();
-        let result = { isAdmin: isAdmin,data: data };
+        let result = { isAdmin: isAdmin, data: data };
         responseSender(res, result);
     },
     removeUserFromMyGroup: async (req, res) => {

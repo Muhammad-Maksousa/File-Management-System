@@ -2,6 +2,7 @@ const router = require("express").Router();
 
 router.use("/user", require("./user"));
 router.use("/group", require("./group"));
+router.use("/file", require("./file"));
 
 
 //should be in the end of all routers
