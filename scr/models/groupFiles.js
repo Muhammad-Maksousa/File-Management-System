@@ -8,6 +8,10 @@ const GroupFiles = sequelize.define("GroupFiles", {
     },
     groupId: {
         type: DataTypes.INTEGER,
+    },
+    approved:{
+        type: DataTypes.BOOLEAN,
+        defaultValue:false
     }
 });
 

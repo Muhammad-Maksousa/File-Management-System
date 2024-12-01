@@ -5,6 +5,7 @@ const Group = require("../models/group");
 const { Op } = require("sequelize");
 const User = require("../models/user");
 const { UserGroupPermissions } = require("../models");
+const UserInvitations = require("../models/UserInvitations");
 
 class GroupUserService {
     constructor({ groupId, userId }) {
@@ -23,13 +24,17 @@ class GroupUserService {
     async getAllUsersOfGroupRaw(groupId) {
         let result = [];
         let groupUsers = await GroupUser.findAll({ raw: true, where: { groupId: groupId }, attributes: ['userId'] });
+        let usersAlreadyInvited = await UserInvitations.findAll({ raw: true, where: { groupId: groupId } });
         for (let i of groupUsers) {
+            result.push(i.userId);
+        }
+        for (let i of usersAlreadyInvited) {
             result.push(i.userId);
         }
         return result;
     }
     async getAllUsersOfGroup(groupId) {
-        return await GroupUser.findAll({ where: { groupId: groupId }, attributes:[],include: { model: User, attributes: ['id', 'email','firstName','lastName'], include: { model: UserGroupPermissions ,attributes:['permission']} } });
+        return await GroupUser.findAll({ where: { groupId: groupId }, attributes: [], include: { model: User, attributes: ['id', 'email', 'firstName', 'lastName'], include: { model: UserGroupPermissions, attributes: ['permission'] } } });
     }
     async removeUserFromMyGroup() {
         return await GroupUser.destroy({ where: { [Op.and]: [{ userId: this.userId }, { groupId: this.groupId }] } });
