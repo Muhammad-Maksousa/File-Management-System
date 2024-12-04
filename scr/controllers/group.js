@@ -24,7 +24,7 @@ module.exports = {
         let validOwner = await new GroupService({}).isHeGroupOwner(userId, groupId);
 
         if (!validOwner)
-            return new CustomError(errors.You_Can_Not_Do_This);
+            throw new CustomError(errors.You_Can_Not_Do_This);
 
         const user = await new GroupService({ ...body }).update(groupId);
         updateResponseSender(res, 'user');

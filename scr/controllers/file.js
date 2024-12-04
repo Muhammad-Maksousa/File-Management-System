@@ -1,9 +1,10 @@
 const FileService = require("../services/file");
 const CustomError = require("../helpers/errors/custom-errors");
-const errors = require("../helpers/errors/errors");
+const errors = require("../helpers/errors/errors.json");
 const { ResponseSenderWithToken, updateResponseSender, responseSender } = require("../helpers/wrappers/response-sender");
 const GroupService = require("../services/group");
 const GroupFilesService = require("../services/groupFile");
+const UserGroupPremissionsService = require("../services/userGroupPermission");
 
 module.exports = {
     add: async (req, res) => {
@@ -11,20 +12,26 @@ module.exports = {
         body.ownerId = req.userId;
         if (req.file)
             body.dbName = req.file.filename;
+
         let isHeGroupOwner = await new GroupService({}).isHeGroupOwner(body.groupId, body.ownerId);
-        const file = await new FileService({ ...body }).add();
-        body.fileId = file.id;
         if (isHeGroupOwner) {
             body.approved = true;
         } else {
+            body.userId = req.userId;
             body.approved = false;
+            const uploadPermission = await new UserGroupPremissionsService({ ...body }).canUploadFile();
+            
+            if(!uploadPermission)
+                throw new CustomError(errors.Not_Authorized);
         }
+        const file = await new FileService({ ...body }).add();
+        body.fileId = file.id;
         await new GroupFilesService({ ...body }).add();
         responseSender(res, file);
     },
     getFileUploadRequists: async (req, res) => {
-        const { groupId } = req.params;
-        const result = await new GroupFilesService({ groupId }).getNotApproved();
+        const ownerId  = req.userId;
+        const result = await new GroupService({}).getNotApprovedFiles(ownerId);
         responseSender(res, result);
     },
     acceptFile: async (req, res) => {

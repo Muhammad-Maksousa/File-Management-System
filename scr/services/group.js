@@ -4,6 +4,7 @@ const errors = require("../helpers/errors/errors.json");
 const { Op } = require("sequelize");
 const GroupFiles = require("../models/groupFiles");
 const File = require("../models/file");
+const User = require("../models/user");
 class GroupService {
     constructor({ name, image, isPublic, ownerId }) {
         this.name = name;
@@ -37,6 +38,9 @@ class GroupService {
     }
     async getOne(id) {
         return await Group.findOne({ where: { id: id }, attributes: ['id', 'name', 'image', 'isPublic'], include: { model: GroupFiles, where: { approved: true }, required: false, attributes: ['fileId'], include: { model: File, attributes: ['name', 'dbName', 'free', 'ownerId'] } } });
+    }
+    async getNotApprovedFiles(ownerId) {
+        return await Group.findAll({ where: { ownerId: ownerId }, attributes: ['id', 'name', 'image', 'isPublic'], include: { model: GroupFiles, where: { approved: false }, required: true, attributes: ['id'], include: { model: File, attributes: ['id', 'name', 'dbName'], include: { model: User, attributes: ['id', 'email', 'firstName', 'lastName'] } } } });
     }
 }
 module.exports = GroupService;
