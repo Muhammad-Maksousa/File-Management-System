@@ -27,12 +27,17 @@ class FileService {
             free: this.free
         }, { where: { id: id } });
     }
-    async changeStatus(id) {
-        const file = await File.findByPk(id);
-        return await File.update({ free: !file.free }, { where: { id: id } });
+    async checkIn(ids) {
+        return await File.update({ free: false }, { where: { id: ids } });
     }
-    async newDbName(file) {
-        //await
+    async checkOut(id) {
+        return await File.update({ free: true }, { where: { id: id } });
+    }
+    async newDbName(fileId, newDbName) {
+        const file = await File.findByPk(fileId);
+        let filesPath = "./public/files/" + file.dbName;
+        await removeFile(filesPath);
+        return await File.update({ dbName: newDbName }, { where: { id: fileId } });
     }
     async deleteFile(id) {
         const file = await File.findByPk(id);

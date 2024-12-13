@@ -44,5 +44,8 @@ class UserGroupPremissionsService {
     async canUploadFile() {
         return await UserGroupPremissions.findOne({ where: { [Op.and]: [{ userId: this.userId }, { groupId: this.groupId }, { permission: 3 }] } });
     }
+    async canCheckInFile(){
+        return await UserGroupPremissions.findOne({ where: { [Op.and]: [{ userId: this.userId }, { groupId: this.groupId }, { permission: 1 }] } });
+    }
 }
 module.exports = UserGroupPremissionsService;

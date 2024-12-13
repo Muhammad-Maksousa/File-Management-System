@@ -20,8 +20,8 @@ module.exports = {
             body.userId = req.userId;
             body.approved = false;
             const uploadPermission = await new UserGroupPremissionsService({ ...body }).canUploadFile();
-            
-            if(!uploadPermission)
+
+            if (!uploadPermission)
                 throw new CustomError(errors.Not_Authorized);
         }
         const file = await new FileService({ ...body }).add();
@@ -30,7 +30,7 @@ module.exports = {
         responseSender(res, file);
     },
     getFileUploadRequists: async (req, res) => {
-        const ownerId  = req.userId;
+        const ownerId = req.userId;
         const result = await new GroupService({}).getNotApprovedFiles(ownerId);
         responseSender(res, result);
     },
@@ -44,5 +44,20 @@ module.exports = {
         const groupFile = await new GroupFilesService({}).declineUploadedFile(groupFileId);
         const file = await new FileService({}).deleteFile(groupFile.fileId);
         responseSender(res, "The file has been declined");
+    },
+    checkInFile: async (req, res) => {
+        const { userId } = req;
+        let { body } = req;
+        body.userId = userId
+        const checkInPermission = await new UserGroupPremissionsService({ ...body }).canCheckInFile();
+        if (!checkInPermission)
+            throw new CustomError(errors.Not_Authorized);
+        const result = await new FileService({}).checkIn(body.fileIds);
+        responseSender(res, result);
+    },
+    checkOutFile: async (req, res) => {
+
+        
+
     }
 };
