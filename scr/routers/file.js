@@ -8,6 +8,7 @@ router.post("/",upload.single("file"), apiHandler(verifyUserToken), apiHandler(c
 router.get("/UploadRequists",apiHandler(verifyUserToken),apiHandler(controller.getFileUploadRequists));
 router.get("/accept/:groupFileId",apiHandler(verifyUserToken),apiHandler(controller.acceptFile));
 router.get("/decline/:groupFileId",apiHandler(verifyUserToken),apiHandler(controller.declineFile));
+router.get("/all",apiHandler(controller.allFiles));
 
 
 module.exports = router;

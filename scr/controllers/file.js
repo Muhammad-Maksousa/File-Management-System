@@ -59,5 +59,9 @@ module.exports = {
 
         
 
+    },
+    allFiles: async (req,res)=>{
+        const result = await new FileService({}).allFiles();
+        responseSender(res,result);
     }
 };

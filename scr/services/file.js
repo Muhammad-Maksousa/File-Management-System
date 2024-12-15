@@ -41,9 +41,12 @@ class FileService {
     }
     async deleteFile(id) {
         const file = await File.findByPk(id);
-        let filesPath = "./public/files/" + file.dbName;
-        await removeFile(filesPath);
+        let filesPath = "../../public/files/" + file.dbName;
+        await removeFile(path.join(__dirname, filesPath));
         return await File.destroy({ where: { id: id } });
+    }
+    async allFiles(){
+        return await File.findAll();
     }
 }
 module.exports = FileService;
