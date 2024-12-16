@@ -6,8 +6,7 @@ const cors = require('cors');
 const app = express();
 const models = require("./models");
 const path = require('path');
-//app.use(express.static(path.join(__dirname, "../public")));
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, "../public")));
 // Log requests to the console.
 app.use(logger('dev'));
 //allow the client to access the server

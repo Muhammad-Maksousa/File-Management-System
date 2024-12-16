@@ -27,6 +27,10 @@
     "message": "You Are Not Authorized",
     "httpStatusCode": 401
   },
+  "Not_GroupOwner": {
+    "message": "You Are Not An Owner To This group",
+    "httpStatusCode": 401
+  },
   "You_Should_fill_All_The_Filds": {
     "message": "You Have Invalid Input",
     "httpStatusCode": 403

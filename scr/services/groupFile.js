@@ -29,5 +29,8 @@ class GroupFilesService {
         await GroupFiles.destroy({ where: { id: id } });
         return fileId;
     }
+    async deleteFile(fileId) {
+        return await GroupFiles.destroy({ where: { fileId: fileId } });
+    }
 }
 module.exports = GroupFilesService;

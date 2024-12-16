@@ -10,24 +10,26 @@ module.exports = {
     add: async (req, res) => {
         let { body } = req;
         body.ownerId = req.userId;
+        let message;
         if (req.file)
             body.dbName = req.file.filename;
 
         let isHeGroupOwner = await new GroupService({}).isHeGroupOwner(body.groupId, body.ownerId);
         if (isHeGroupOwner) {
             body.approved = true;
+            message = "The file has been uploaded to the group successfully";
         } else {
             body.userId = req.userId;
             body.approved = false;
             const uploadPermission = await new UserGroupPremissionsService({ ...body }).canUploadFile();
-
+            message = "The file need to be approved by The group owner befor add it to the group files";
             if (!uploadPermission)
                 throw new CustomError(errors.Not_Authorized);
         }
         const file = await new FileService({ ...body }).add();
         body.fileId = file.id;
         await new GroupFilesService({ ...body }).add();
-        responseSender(res, file);
+        responseSender(res, message);
     },
     getFileUploadRequists: async (req, res) => {
         const ownerId = req.userId;
@@ -57,11 +59,21 @@ module.exports = {
     },
     checkOutFile: async (req, res) => {
 
-        
+
 
     },
-    allFiles: async (req,res)=>{
+    allFiles: async (req, res) => {
         const result = await new FileService({}).allFiles();
-        responseSender(res,result);
+        responseSender(res, result);
+    },
+    deleteFile: async (req, res) => {
+        const { fileId, groupId } = req.body;
+        const { userId } = req;
+        let isHeGroupOwner = await new GroupService({}).isHeGroupOwner(groupId, userId);
+        if(!isHeGroupOwner)
+            throw new CustomError(errors.Not_GroupOwner);
+        await new GroupFilesService({}).deleteFile(fileId);
+        await new FileService({}).deleteFile(fileId);
+        responseSender(res, "The file has been deleted successfully");
     }
 };
