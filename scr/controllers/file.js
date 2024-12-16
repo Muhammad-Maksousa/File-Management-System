@@ -22,7 +22,7 @@ module.exports = {
             body.userId = req.userId;
             body.approved = false;
             const uploadPermission = await new UserGroupPremissionsService({ ...body }).canUploadFile();
-            message = "The file need to be approved by The group owner befor add it to the group files";
+            message = "The file need to be approved by The group owner befor adding it to the group files";
             if (!uploadPermission)
                 throw new CustomError(errors.Not_Authorized);
         }
