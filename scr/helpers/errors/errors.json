@@ -36,7 +36,15 @@
     "httpStatusCode": 403
   },
   "Missing_Value_Field": {
-    "message": "You Missed Value Field",
+    "message": "You Did Not Upload A File",
+    "httpStatusCode": 403
+  },
+  "Did_Not_Match_File_Type": {
+    "message": "The File You Just Uploaded Did Not Match The Orginal File Type",
+    "httpStatusCode": 403
+  },
+  "Did_Not_Match_File_Name": {
+    "message": "The File You Just Uploaded Did Not Match The Orginal File Name",
     "httpStatusCode": 403
   },
   "The_User_Not_Found": {

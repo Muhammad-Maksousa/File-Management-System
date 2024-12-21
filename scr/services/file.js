@@ -27,17 +27,27 @@ class FileService {
             free: this.free
         }, { where: { id: id } });
     }
-    async checkIn(ids) {
-        return await File.update({ free: false }, { where: { id: ids } });
+    async checkIn(ids, transaction) {
+        return await File.update({ free: false }, { where: { id: ids } }, { transaction: transaction });
     }
     async checkOut(id) {
         return await File.update({ free: true }, { where: { id: id } });
     }
-    async newDbName(fileId, newDbName) {
-        const file = await File.findByPk(fileId);
-        let filesPath = "./public/files/" + file.dbName;
+    async checkIfAllFree(ids, transaction) {
+        const files = await File.findAll({ where: { id: { [Op.in]: ids } } }, { transaction: transaction });
+        let allFileAreFree = true, nameOfTakenFile = "";
+        files.forEach(file => {
+            if (file.free == false) {
+                allFileAreFree = false;
+                nameOfTakenFile = file.name;
+            }
+        });
+        return { allFileAreFree: allFileAreFree, nameOfTakenFile: nameOfTakenFile };
+    }
+    async newDbName(fileId, newDbName, oldDbName) {
+        let filesPath = "./public/files/" + oldDbName;
         await removeFile(filesPath);
-        return await File.update({ dbName: newDbName }, { where: { id: fileId } });
+        return await File.update({ dbName: newDbName, free: true }, { where: { id: fileId } });
     }
     async deleteFile(id) {
         const file = await File.findByPk(id);
@@ -45,8 +55,13 @@ class FileService {
         await removeFile(path.join(__dirname, filesPath));
         return await File.destroy({ where: { id: id } });
     }
-    async allFiles(){
+    async allFiles() {
         return await File.findAll();
+    }
+    async getFilePath(id) {
+        const file = await File.findByPk(id);
+        let filesPath = "../../public/files/" + file.dbName;
+        return { path: path.join(__dirname, filesPath), name: file.name, dbName: file.dbName };
     }
 }
 module.exports = FileService;

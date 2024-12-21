@@ -5,7 +5,9 @@ const { ResponseSenderWithToken, updateResponseSender, responseSender } = requir
 const GroupService = require("../services/group");
 const GroupFilesService = require("../services/groupFile");
 const UserGroupPremissionsService = require("../services/userGroupPermission");
-
+const FileHistoryService = require("../services/fileHistory");
+const sequelize = require("../helpers/db/init");
+const mime = require('mime-types');
 module.exports = {
     add: async (req, res) => {
         let { body } = req;
@@ -50,17 +52,44 @@ module.exports = {
     checkInFile: async (req, res) => {
         const { userId } = req;
         let { body } = req;
-        body.userId = userId
+        let checkIfAllFree;
+        body.userId = userId;
         const checkInPermission = await new UserGroupPremissionsService({ ...body }).canCheckInFile();
         if (!checkInPermission)
             throw new CustomError(errors.Not_Authorized);
-        const result = await new FileService({}).checkIn(body.fileIds);
-        responseSender(res, result);
+        const transaction = await sequelize.transaction({ autocommit: false });
+        try {
+            checkIfAllFree = await new FileService({}).checkIfAllFree(body.fileIds, transaction);
+            if (checkIfAllFree.allFileAreFree == true) {
+                await new FileService({}).checkIn(body.fileIds, transaction);
+                await new FileHistoryService({}).add(userId,body.fileIds);
+                await transaction.commit();
+                responseSender(res, "Downloading Your files.");
+            } else {
+                await transaction.rollback();
+                responseSender(res, "The file " + checkIfAllFree.nameOfTakenFile + " is taken please choose only free files", "failed", 200);
+            }
+        } catch (err) {
+            console.log(err);
+            await transaction.rollback();
+            throw new CustomError(errors.Internal_Server_Error);
+        }
     },
     checkOutFile: async (req, res) => {
+        const { body, userId } = req;
+        if (!req.file)
+            throw new CustomError(errors.Missing_Value_Field);
+        let newDbName = req.file.filename, newFileName = req.file.originalname;
+        let file = await new FileService({}).getFilePath(body.fileId);
 
+        if (file.name != newFileName.substring(0, newFileName.indexOf('.')))
+            throw new CustomError(errors.Did_Not_Match_File_Name);
+        if (mime.lookup(file.path) != req.file.mimetype)
+            throw new CustomError(errors.Did_Not_Match_File_Type);
 
-
+        await new FileService({}).newDbName(body.fileId, newDbName,file.dbName);
+        await new FileHistoryService({}).update(userId,body.fileId);
+        responseSender(res, "Your File Has Been Uploaded Successfully");
     },
     allFiles: async (req, res) => {
         const result = await new FileService({}).allFiles();
@@ -70,7 +99,7 @@ module.exports = {
         const { fileId, groupId } = req.body;
         const { userId } = req;
         let isHeGroupOwner = await new GroupService({}).isHeGroupOwner(groupId, userId);
-        if(!isHeGroupOwner)
+        if (!isHeGroupOwner)
             throw new CustomError(errors.Not_GroupOwner);
         await new GroupFilesService({}).deleteFile(fileId);
         await new FileService({}).deleteFile(fileId);
