@@ -33,5 +33,9 @@ const User = sequelize.define("User", {
         type: DataTypes.BOOLEAN,
         defaultValue: false
     },
+    isBlocked: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
+    }
 });
 module.exports = User;

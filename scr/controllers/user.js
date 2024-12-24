@@ -88,5 +88,20 @@ module.exports = {
         const { body } = req;
         await new GroupUserService({ ...body }).removeUserFromMyGroup();
         responseSender(res, "the user has been removed successfuly");
+    },
+    allUsers: async (req, res) => {
+        const result = await new UserService({}).getAllUsers();
+        responseSender(res, result);
+    },
+    block: async (req, res) => {
+        const { userId } = req.params;
+        await new UserService({}).block(userId);
+        responseSender(res, "The User Has Been Blocked Successfully");
+    },
+    unBlock: async (req, res) => {
+        const { userId } = req.params;
+        console.log(userId);
+        await new UserService({}).unBlock(userId);
+        responseSender(res, "The User Has Been UnBlocked Successfully");
     }
 };

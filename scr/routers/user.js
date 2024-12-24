@@ -17,4 +17,7 @@ router.get("/accept/:invitationId", apiHandler(verifyUserToken), apiHandler(cont
 router.get("/decline/:invitationId", apiHandler(verifyUserToken), apiHandler(controller.declineGroupInvitation));
 router.get("/usersToInvite/:groupId", apiHandler(verifyUserToken), apiHandler(controller.usersToInvite));
 router.get("/myOwnGroups", apiHandler(verifyUserToken), apiHandler(controller.getMyOwnGroups));
+router.get("/all", apiHandler(controller.allUsers));
+router.get("/block/:userId",apiHandler(verifyUserToken) ,apiHandler(controller.block));
+router.get("/unBlock/:userId",apiHandler(verifyUserToken) ,apiHandler(controller.unBlock));
 module.exports = router;

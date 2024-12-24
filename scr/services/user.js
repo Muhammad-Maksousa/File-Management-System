@@ -57,13 +57,24 @@ class UserService {
         return { user: result, token: token }
     }
     async getById(id) {
-        return await User.findByPk(id, { attributes: ['id', 'email', 'firstName', 'lastName', 'isAdmin'] });
+        return await User.findByPk(id, { attributes: ['id', 'email', 'firstName', 'lastName', 'isAdmin', 'isBlocked'] });
     }
     async getUsersNotInthisGroup(users) {
         return await User.findAll({ where: { id: { [Op.notIn]: users } }, attributes: ['id', 'email', 'firstName', 'lastName'] });
     }
     async getBasicInfo(id) {
         return await User.findOne({ where: { id: id }, attributes: ['email', 'firstName', 'lastName'] });
+    }
+    async getAllUsers() {
+        return await User.findAll({ where: { isAdmin: false }, attributes: ['id', 'email', 'firstName', 'lastName', 'isBlocked'] });
+    }
+    async block(id) {
+        console.log("---------------------");
+        
+        return await User.update({ isBlocked: true }, { where: { id: id } });
+    }
+    async unBlock(id) {
+        return await User.update({ isBlocked: false }, { where: { id: id } });
     }
 }
 module.exports = UserService;
