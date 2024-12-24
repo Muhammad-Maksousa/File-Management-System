@@ -42,5 +42,8 @@ class GroupService {
     async getNotApprovedFiles(ownerId) {
         return await Group.findAll({ where: { ownerId: ownerId }, attributes: ['id', 'name', 'image', 'isPublic'], include: { model: GroupFiles, where: { approved: false }, required: true, attributes: ['id'], include: { model: File, attributes: ['id', 'name', 'dbName'], include: { model: User, attributes: ['id', 'email', 'firstName', 'lastName'] } } } });
     }
+    async getBasicInfo(id) {
+        return await Group.findOne({ where: { id: id }, attributes: ['name', 'image', 'isPublic'] });
+    }
 }
 module.exports = GroupService;

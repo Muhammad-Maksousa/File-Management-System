@@ -5,7 +5,10 @@ const fs = require("fs");
 const path = require('path');
 const { promisify } = require('util');
 const removeFile = promisify(fs.unlink);
-const { Op } = require("sequelize");
+const { Op, Sequelize } = require("sequelize");
+const User = require("../models/user");
+const GroupFiles = require("../models/groupFiles");
+const { Group } = require("../models");
 class FileService {
     constructor({ name, dbName, free, ownerId }) {
         this.name = name;
@@ -62,6 +65,12 @@ class FileService {
         const file = await File.findByPk(id);
         let filesPath = "../../public/files/" + file.dbName;
         return { path: path.join(__dirname, filesPath), name: file.name, dbName: file.dbName };
+    }
+    async getOne(id) {
+        return await File.findOne({
+            where: { id: id }, attributes: ["name", "dbName", "free", [Sequelize.fn('date_format', Sequelize.col('File.createdAt'), '%d-%m-%Y %H:%i:%s'), "UploadedAt"], 'ownerId'],
+            include: [{ model: User, attributes: ['firstName', 'lastName', "email"] }, { model: GroupFiles, attributes: ['groupId'], include: { model: Group, attributes: ['name', 'image', 'isPublic'] } }]
+        });
     }
 }
 module.exports = FileService;

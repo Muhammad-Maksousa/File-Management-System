@@ -6,6 +6,7 @@ const GroupService = require("../services/group");
 const GroupFilesService = require("../services/groupFile");
 const UserGroupPremissionsService = require("../services/userGroupPermission");
 const FileHistoryService = require("../services/fileHistory");
+const UserService = require("../services/user");
 const sequelize = require("../helpers/db/init");
 const mime = require('mime-types');
 module.exports = {
@@ -62,7 +63,7 @@ module.exports = {
             checkIfAllFree = await new FileService({}).checkIfAllFree(body.fileIds, transaction);
             if (checkIfAllFree.allFileAreFree == true) {
                 await new FileService({}).checkIn(body.fileIds, transaction);
-                await new FileHistoryService({}).add(userId,body.fileIds);
+                await new FileHistoryService({}).add(userId, body.fileIds);
                 await transaction.commit();
                 responseSender(res, "Downloading Your files.");
             } else {
@@ -87,8 +88,8 @@ module.exports = {
         if (mime.lookup(file.path) != req.file.mimetype)
             throw new CustomError(errors.Did_Not_Match_File_Type);
 
-        await new FileService({}).newDbName(body.fileId, newDbName,file.dbName);
-        await new FileHistoryService({}).update(userId,body.fileId);
+        await new FileService({}).newDbName(body.fileId, newDbName, file.dbName);
+        await new FileHistoryService({}).update(userId, body.fileId);
         responseSender(res, "Your File Has Been Uploaded Successfully");
     },
     allFiles: async (req, res) => {
@@ -104,5 +105,27 @@ module.exports = {
         await new GroupFilesService({}).deleteFile(fileId);
         await new FileService({}).deleteFile(fileId);
         responseSender(res, "The file has been deleted successfully");
+    },
+    fileStatistics: async (req, res) => {
+        const { fileId } = req.params;
+        const fileInfo = await new FileService({}).getOne(fileId);
+        const fileStatistics = await new FileHistoryService({}).fileStatictics(fileId);
+        responseSender(res, { fileInfo: fileInfo, fileStatistics: fileStatistics });
+    },
+    userStatistics: async (req, res) => {
+        const { userId, body } = req;
+        const isHeGroupOwner = await new GroupService({}).isHeGroupOwner(body.groupId, userId);
+        if (!isHeGroupOwner)
+            throw new CustomError(errors.Not_Authorized);
+        const fileIds = await new GroupFilesService({}).getFilesOfGroup(body.groupId);
+        const stats = await new FileHistoryService({}).userStatictics(body.userId,fileIds);
+        const group = await new GroupService({}).getBasicInfo(body.groupId);
+        const user = await new UserService({}).getBasicInfo(userId);
+        let result = {
+            userInfo:user,
+            groupInfo:group,
+            userStatistics:stats
+        };
+        responseSender(res, result);
     }
 };

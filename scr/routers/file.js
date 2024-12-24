@@ -12,6 +12,7 @@ router.get("/UploadRequists", apiHandler(verifyUserToken), apiHandler(controller
 router.get("/accept/:groupFileId", apiHandler(verifyUserToken), apiHandler(controller.acceptFile));
 router.get("/decline/:groupFileId", apiHandler(verifyUserToken), apiHandler(controller.declineFile));
 router.get("/all", apiHandler(controller.allFiles));
-
+router.get("/fileStatistics/:fileId", apiHandler(controller.fileStatistics));
+router.post("/userStatistics",apiHandler(verifyUserToken), apiHandler(controller.userStatistics));
 
 module.exports = router;

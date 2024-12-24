@@ -32,5 +32,10 @@ class GroupFilesService {
     async deleteFile(fileId) {
         return await GroupFiles.destroy({ where: { fileId: fileId } });
     }
+    async getFilesOfGroup(groupId) {
+        let rows = await GroupFiles.findAll({ where: { groupId: groupId } });
+        let fileIds = rows.map(row=>row.fileId);
+        return fileIds;
+    }
 }
 module.exports = GroupFilesService;
