@@ -52,7 +52,8 @@ class UserService {
             email: user.email,
             firstName: user.firstName,
             lastName: user.lastName,
-            isAdmin: user.isAdmin
+            isAdmin: user.isAdmin,
+            isBlocked: user.isBlocked
         }
         return { user: result, token: token }
     }
@@ -69,8 +70,6 @@ class UserService {
         return await User.findAll({ where: { isAdmin: false }, attributes: ['id', 'email', 'firstName', 'lastName', 'isBlocked'] });
     }
     async block(id) {
-        console.log("---------------------");
-        
         return await User.update({ isBlocked: true }, { where: { id: id } });
     }
     async unBlock(id) {
