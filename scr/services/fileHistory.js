@@ -33,8 +33,11 @@ class FileHistoryService {
     }
     async userStatictics(userId, fileIds) {
         return await FileHistory.findAll({
-            where: { [Op.and]: [{ userId: userId }, { fileId: { [Op.in]: fileIds } }] }, attributes: ["fileId","returned", [Sequelize.fn('date_format', Sequelize.col('FileHistory.createdAt'), '%d-%m-%Y %H:%i:%s'), "Download Date"], [Sequelize.fn('date_format', Sequelize.col('FileHistory.updatedAt'), '%d-%m-%Y %H:%i:%s'), "Upload Date"]], include:{model:File,attributes:["name"]},order: [['updatedAt', 'DESC']]
+            where: { [Op.and]: [{ userId: userId }, { fileId: { [Op.in]: fileIds } }] }, attributes: ["fileId", "returned", [Sequelize.fn('date_format', Sequelize.col('FileHistory.createdAt'), '%d-%m-%Y %H:%i:%s'), "Download Date"], [Sequelize.fn('date_format', Sequelize.col('FileHistory.updatedAt'), '%d-%m-%Y %H:%i:%s'), "Upload Date"]], include: { model: File, attributes: ["name"] }, order: [['updatedAt', 'DESC']]
         });
+    }
+    async deleteFileHistory(fileId) {
+        return await FileHistory.destroy({ where: { fileId: fileId } });
     }
 }
 module.exports = FileHistoryService;

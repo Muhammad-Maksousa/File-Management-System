@@ -1,5 +1,8 @@
 const GroupService = require("../services/group");
 const GroupUserService = require("../services/groupUser");
+const GroupFileService = require("../services/groupFile");
+const FileService = require("../services/file");
+const FileHistoryService = require("../services/fileHistory");
 const CustomError = require("../helpers/errors/custom-errors");
 const errors = require("../helpers/errors/errors.json");
 const { ResponseSenderWithToken, updateResponseSender, responseSender } = require("../helpers/wrappers/response-sender");
@@ -75,5 +78,27 @@ module.exports = {
         if (isHeGroupOwner)
             result.groupOwner = true;
         responseSender(res, result);
+    },
+    getAll: async (req, res) => {
+        const result = await new GroupService({}).getAll();
+        responseSender(res, result);
+    },
+    delete: async (req, res) => {
+        const { userId, isAdmin } = req;
+        const { groupId } = req.params;
+        const isHeGroupOwner = await new GroupService({}).isHeGroupOwner(groupId, userId);
+
+        if (!isHeGroupOwner && !isAdmin)
+            throw new CustomError(errors.Not_Authorized);
+
+        const fileIds = await new GroupFileService({}).deleteGroupFiles(groupId);
+        fileIds.forEach(async (fileId) => {
+            await new FileHistoryService({}).deleteFileHistory(fileId);
+            await new FileService({}).deleteFile(fileId);
+        });
+        await new GroupUserService({}).deleteGroupUsers(groupId);
+        await new UserInvitationsService({}).deleteGroupInvitations(groupId);
+        await new GroupService({}).delete(groupId);
+        responseSender(res, "The Group Has Been Deleted Successfully");
     }
 };

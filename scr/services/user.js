@@ -41,9 +41,13 @@ class UserService {
             throw new CustomError(errors.Entity_Not_Found);
 
         let passwordIsValid = bcrypt.compareSync(this.password, user.password);
+
         if (!passwordIsValid)
             throw new CustomError(errors.Wrong_Password);
 
+        if(user.isBlocked == true)
+            throw new CustomError(errors.YOU_ARE_BLOCKED_BY_ADMIN);
+            
         let token = jwt.sign({ userId: user.id, isAdmin: user.isAdmin }, secretKey, {
             expiresIn: 86400 * 720 // 2 years
         });

@@ -19,13 +19,16 @@ class UserInvitationsService {
         });
     }
     async getMyInvitaions() {
-        return await UserInvitations.findAll({ where: { userId: this.userId },attributes:['id','message'], include: { model: Group, attributes: ['id', 'name', 'image'], include: { model: User, attributes: ['id', 'email','firstName','lastName'] } } });
+        return await UserInvitations.findAll({ where: { userId: this.userId }, attributes: ['id', 'message'], include: { model: Group, attributes: ['id', 'name', 'image'], include: { model: User, attributes: ['id', 'email', 'firstName', 'lastName'] } } });
     }
     async getInvitation(id) {
         return await UserInvitations.findByPk(id);
     }
     async deleteInvitation(id) {
         return await UserInvitations.destroy({ where: { id: id } });
+    }
+    async deleteGroupInvitations(groupId) {
+        return await UserInvitations.destroy({ where: { groupId: groupId } });
     }
 }
 module.exports = UserInvitationsService;

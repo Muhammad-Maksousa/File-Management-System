@@ -27,6 +27,10 @@
     "message": "You Are Not Authorized",
     "httpStatusCode": 401
   },
+  "YOU_ARE_BLOCKED_BY_ADMIN": {
+    "message": "You Are Blocked By The Admin",
+    "httpStatusCode": 401
+  },
   "Not_GroupOwner": {
     "message": "You Are Not An Owner To This group",
     "httpStatusCode": 401

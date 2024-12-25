@@ -34,7 +34,13 @@ class GroupFilesService {
     }
     async getFilesOfGroup(groupId) {
         let rows = await GroupFiles.findAll({ where: { groupId: groupId } });
-        let fileIds = rows.map(row=>row.fileId);
+        let fileIds = rows.map(row => row.fileId);
+        return fileIds;
+    }
+    async deleteGroupFiles(groupId) {
+        let rows = await GroupFiles.findAll({ where: { groupId: groupId } });
+        await GroupFiles.destroy({ where: { groupId: groupId } });
+        let fileIds = rows.map(row => row.fileId);
         return fileIds;
     }
 }

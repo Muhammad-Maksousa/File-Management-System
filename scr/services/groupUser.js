@@ -39,5 +39,8 @@ class GroupUserService {
     async removeUserFromMyGroup() {
         return await GroupUser.destroy({ where: { [Op.and]: [{ userId: this.userId }, { groupId: this.groupId }] } });
     }
+    async deleteGroupUsers(groupId) {
+        return await GroupUser.destroy({ where: { groupId: groupId } });
+    }
 }
 module.exports = GroupUserService;

@@ -39,11 +39,17 @@ class GroupService {
     async getOne(id) {
         return await Group.findOne({ where: { id: id }, attributes: ['id', 'name', 'image', 'isPublic'], include: { model: GroupFiles, where: { approved: true }, required: false, attributes: ['fileId'], include: { model: File, attributes: ['name', 'dbName', 'free', 'ownerId'] } } });
     }
+    async getAll() {
+        return await Group.findAll({ attributes: ['id', 'name', 'image', 'isPublic'] });
+    }
     async getNotApprovedFiles(ownerId) {
         return await Group.findAll({ where: { ownerId: ownerId }, attributes: ['id', 'name', 'image', 'isPublic'], include: { model: GroupFiles, where: { approved: false }, required: true, attributes: ['id'], include: { model: File, attributes: ['id', 'name', 'dbName'], include: { model: User, attributes: ['id', 'email', 'firstName', 'lastName'] } } } });
     }
     async getBasicInfo(id) {
         return await Group.findOne({ where: { id: id }, attributes: ['name', 'image', 'isPublic'] });
+    }
+    async delete(id) {
+        return await Group.destroy({ where: { id: id } });
     }
 }
 module.exports = GroupService;
