@@ -39,5 +39,17 @@ class FileHistoryService {
     async deleteFileHistory(fileId) {
         return await FileHistory.destroy({ where: { fileId: fileId } });
     }
+    async userDownloadedFiles(userId, data) {
+        let newData = data;
+        newData.GroupFiles.forEach(async (file) => {
+            console.log(file.File.dataValues);
+            let canUpload = false;
+            let userDownloadedFile = await FileHistory.findOne({ where: { [Op.and]: [{ userId: userId }, { fileId: file.fileId }, { returned: false }] } });
+            if(userDownloadedFile)
+                canUpload = true;
+            file.File.dataValues.canUpload=canUpload;
+        });
+        return newData;
+    }
 }
 module.exports = FileHistoryService;

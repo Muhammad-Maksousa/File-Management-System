@@ -41,8 +41,9 @@ module.exports = {
         const { userId } = req;
         const { isAdmin } = req;
         const { groupId } = req.params;
-        const data = await new GroupService({}).getOne(groupId);
-        let result = { groupOwner: false, isAdmin: isAdmin, data: data };
+        let data = await new GroupService({}).getOne(groupId);
+        let finalData = await new FileHistoryService({}).userDownloadedFiles(userId,data);
+        let result = { groupOwner: false, isAdmin: isAdmin, data: finalData };
         const isHeGroupOwner = await new GroupService({}).isHeGroupOwner(groupId, userId);
         if (isHeGroupOwner)
             result.groupOwner = true;
