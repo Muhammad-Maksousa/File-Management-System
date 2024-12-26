@@ -85,7 +85,8 @@ module.exports = {
 
         if (file.name != newFileName.substring(0, newFileName.indexOf('.')))
             throw new CustomError(errors.Did_Not_Match_File_Name);
-        if (mime.lookup(file.path) != req.file.mimetype)
+
+        if (mime.lookup(file.path) != mime.lookup(req.file.path))
             throw new CustomError(errors.Did_Not_Match_File_Type);
 
         await new FileService({}).newDbName(body.fileId, newDbName, file.dbName);
