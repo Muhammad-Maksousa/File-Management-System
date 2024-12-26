@@ -18,7 +18,7 @@ module.exports = {
             body.dbName = req.file.filename;
 
         let isHeGroupOwner = await new GroupService({}).isHeGroupOwner(body.groupId, body.ownerId);
-        if (isHeGroupOwner) {
+        if (isHeGroupOwner || req.isAdmin == true) {
             body.approved = true;
             message = "The file has been uploaded to the group successfully";
         } else {
@@ -98,9 +98,9 @@ module.exports = {
     },
     deleteFile: async (req, res) => {
         const { fileId, groupId } = req.body;
-        const { userId } = req;
+        const { userId, isAdmin } = req;
         let isHeGroupOwner = await new GroupService({}).isHeGroupOwner(groupId, userId);
-        if (!isHeGroupOwner)
+        if (!isHeGroupOwner && !isAdmin)
             throw new CustomError(errors.Not_GroupOwner);
         await new GroupFilesService({}).deleteFile(fileId);
         await new FileService({}).deleteFile(fileId);
@@ -113,18 +113,18 @@ module.exports = {
         responseSender(res, { fileInfo: fileInfo, fileStatistics: fileStatistics });
     },
     userStatistics: async (req, res) => {
-        const { userId, body } = req;
+        const { userId, body, isAdmin } = req;
         const isHeGroupOwner = await new GroupService({}).isHeGroupOwner(body.groupId, userId);
-        if (!isHeGroupOwner)
+        if (!isHeGroupOwner && !isAdmin)
             throw new CustomError(errors.Not_Authorized);
         const fileIds = await new GroupFilesService({}).getFilesOfGroup(body.groupId);
-        const stats = await new FileHistoryService({}).userStatictics(body.userId,fileIds);
+        const stats = await new FileHistoryService({}).userStatictics(body.userId, fileIds);
         const group = await new GroupService({}).getBasicInfo(body.groupId);
         const user = await new UserService({}).getBasicInfo(userId);
         let result = {
-            userInfo:user,
-            groupInfo:group,
-            userStatistics:stats
+            userInfo: user,
+            groupInfo: group,
+            userStatistics: stats
         };
         responseSender(res, result);
     }

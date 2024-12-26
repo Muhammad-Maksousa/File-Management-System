@@ -20,13 +20,13 @@ module.exports = {
     },
     update: async (req, res) => {
         const { groupId } = req.params;
-        const { userId } = req;
+        const { userId, isAdmin } = req;
         const { body } = req;
         if (req.file)
             body.image = req.file.filename;
         let validOwner = await new GroupService({}).isHeGroupOwner(userId, groupId);
 
-        if (!validOwner)
+        if (!validOwner && !isAdmin)
             throw new CustomError(errors.You_Can_Not_Do_This);
 
         const user = await new GroupService({ ...body }).update(groupId);
@@ -42,7 +42,7 @@ module.exports = {
         const { isAdmin } = req;
         const { groupId } = req.params;
         let data = await new GroupService({}).getOne(groupId);
-        let finalData = await new FileHistoryService({}).userDownloadedFiles(userId,data);
+        let finalData = await new FileHistoryService({}).userDownloadedFiles(userId, data);
         let result = { groupOwner: false, isAdmin: isAdmin, data: finalData };
         const isHeGroupOwner = await new GroupService({}).isHeGroupOwner(groupId, userId);
         if (isHeGroupOwner)
