@@ -48,8 +48,8 @@ class FileService {
         return { allFileAreFree: allFileAreFree, nameOfTakenFile: nameOfTakenFile };
     }
     async newDbName(fileId, newDbName, oldDbName) {
-        let filesPath = "./public/files/" + oldDbName;
-        await removeFile(filesPath);
+        let filesPath = "../../public/files/" + oldDbName;
+        await removeFile(path.join(__dirname, filesPath));
         return await File.update({ dbName: newDbName, free: true }, { where: { id: fileId } });
     }
     async deleteFile(id) {

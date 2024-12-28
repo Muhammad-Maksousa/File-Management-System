@@ -85,7 +85,6 @@ module.exports = {
 
         if (file.name != newFileName.substring(0, newFileName.indexOf('.')))
             throw new CustomError(errors.Did_Not_Match_File_Name);
-
         if (mime.lookup(file.path) != mime.lookup(req.file.path))
             throw new CustomError(errors.Did_Not_Match_File_Type);
 
@@ -130,8 +129,8 @@ module.exports = {
         responseSender(res, result);
     },
     getFilePath: async (req, res) => {
-        const {fileId} = req.params;
+        const { fileId } = req.params;
         const result = await new FileService({}).getFilePath(fileId);
-        responseSender(res,result);
+        responseSender(res, result);
     }
 };
