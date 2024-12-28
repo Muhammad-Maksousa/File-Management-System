@@ -15,5 +15,6 @@ router.get("/accept/:groupFileId", apiHandler(verifyUserToken), apiHandler(contr
 router.get("/decline/:groupFileId", apiHandler(verifyUserToken), apiHandler(controller.declineFile));
 router.get("/all", apiHandler(controller.allFiles));
 router.get("/fileStatistics/:fileId", apiHandler(controller.fileStatistics));
+router.get("/filePath/:fileId", apiHandler(controller.getFilePath));
 
 module.exports = router;

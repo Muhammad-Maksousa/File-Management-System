@@ -128,5 +128,10 @@ module.exports = {
             userStatistics: stats
         };
         responseSender(res, result);
+    },
+    getFilePath: async (req, res) => {
+        const {fileId} = req.params;
+        const result = await new FileService({}).getFilePath(fileId);
+        responseSender(res,result);
     }
 };
