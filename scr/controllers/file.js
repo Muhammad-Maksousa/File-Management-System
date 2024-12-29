@@ -82,9 +82,11 @@ module.exports = {
             throw new CustomError(errors.Missing_Value_Field);
         let newDbName = req.file.filename, newFileName = req.file.originalname;
         let file = await new FileService({}).getFilePath(body.fileId);
-
+        console.log(req.file);
+        
         if (file.name != newFileName.substring(0, newFileName.indexOf('.')))
             throw new CustomError(errors.Did_Not_Match_File_Name);
+
         if (mime.lookup(file.path) != mime.lookup(req.file.path))
             throw new CustomError(errors.Did_Not_Match_File_Type);
 
