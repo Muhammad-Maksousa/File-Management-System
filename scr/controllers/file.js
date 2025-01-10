@@ -113,6 +113,13 @@ module.exports = {
         const fileStatistics = await new FileHistoryService({}).fileStatictics(fileId);
         responseSender(res, { fileInfo: fileInfo, fileStatistics: fileStatistics });
     },
+    writeFileStatsToCSV: async (req, res) => {
+        const { fileId } = req.params;
+        const fileInfo = await new FileService({}).getOne(fileId);
+        const fileStatistics = await new FileHistoryService({}).fileStatictics(fileId);
+        const fileName = await new FileHistoryService({}).writeFileStatsToCSV(fileStatistics, fileInfo);
+        responseSender(res, { message: "file is downloading", fileName: fileName });
+    },
     userStatistics: async (req, res) => {
         const { userId, body, isAdmin } = req;
         const isHeGroupOwner = await new GroupService({}).isHeGroupOwner(body.groupId, userId);
@@ -128,6 +135,17 @@ module.exports = {
             userStatistics: stats
         };
         responseSender(res, result);
+    },
+    writeUserStatsToCSV: async (req, res) => {
+        const { userId, body, isAdmin } = req;
+        const isHeGroupOwner = await new GroupService({}).isHeGroupOwner(body.groupId, userId);
+        if (!isHeGroupOwner && !isAdmin)
+            throw new CustomError(errors.Not_Authorized);
+        const fileIds = await new GroupFilesService({}).getFilesOfGroup(body.groupId);
+        const stats = await new FileHistoryService({}).userStatictics(body.userId, fileIds);
+        const userInfo = await new UserService({}).getBasicInfo(userId);
+        const fileName = await new FileHistoryService({}).writeUserStatsToCSV(stats, userInfo);
+        responseSender(res, { message: "file is downloading", fileName: fileName });
     },
     getFilePath: async (req, res) => {
         const { fileId } = req.params;
