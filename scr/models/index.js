@@ -7,5 +7,6 @@ module.exports = {
     groupUsers: require("./groupUsers"),
     UserInvitations : require("./UserInvitations"),
     UserGroupPermissions : require("./userGroupPremissions"),
-    FileHistory : require("./fileHistory")
+    FileHistory : require("./fileHistory"),
+    AuditLog : require("./auditLogs")
 };

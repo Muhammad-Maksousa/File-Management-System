@@ -6,6 +6,7 @@ const cors = require('cors');
 const app = express();
 const models = require("./models");
 const path = require('path');
+const auditLogs = require("./middleware/auditLogger");
 app.use(express.static(path.join(__dirname, "../public")));
 // Log requests to the console.
 app.use(logger('dev'));
@@ -24,11 +25,11 @@ sequelize.sync({ alter: false }).then((_) => {
         next();
     });
     app.use(express.json({}));
+    app.use(require("./middleware/auditLogger").auditLogger);
     app.use(require("./routers"));
     app.use(require("./helpers/errors/custom-errors").defaultHandler);
     app.listen(port, () => {
         console.log(`Server is listening on ${port}`);
-        
     });
 }).catch(err => {
     console.log("Unable to connect to the database:", err)

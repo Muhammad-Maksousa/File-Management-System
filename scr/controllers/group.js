@@ -24,9 +24,9 @@ module.exports = {
         const { body } = req;
         if (req.file)
             body.image = req.file.filename;
-        let validOwner = await new GroupService({}).isHeGroupOwner(userId, groupId);
+        let isHeGroupOwner = await new GroupService({}).isHeGroupOwner(groupId, userId);
 
-        if (!validOwner && !isAdmin)
+        if (!isHeGroupOwner && isAdmin == false)
             throw new CustomError(errors.You_Can_Not_Do_This);
 
         const user = await new GroupService({ ...body }).update(groupId);
@@ -89,7 +89,7 @@ module.exports = {
         const { groupId } = req.params;
         const isHeGroupOwner = await new GroupService({}).isHeGroupOwner(groupId, userId);
 
-        if (!isHeGroupOwner && !isAdmin)
+        if (!isHeGroupOwner && isAdmin == false)
             throw new CustomError(errors.Not_Authorized);
 
         const fileIds = await new GroupFileService({}).deleteGroupFiles(groupId);

@@ -1,3 +1,4 @@
 module.exports = {
-    Auth: require("./auth")
+    Auth: require("./auth"),
+    Logger: require("./logger")
 };
