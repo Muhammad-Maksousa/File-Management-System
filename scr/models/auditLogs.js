@@ -19,7 +19,7 @@ const AuditLog = sequelize.define("AuditLog", {
         allowNull: true
     },
     response: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT('long'),
         allowNull: true
     },
     userId: {

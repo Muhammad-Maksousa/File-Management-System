@@ -9,6 +9,10 @@ const FileHistoryService = require("../services/fileHistory");
 const UserService = require("../services/user");
 const sequelize = require("../helpers/db/init");
 const mime = require('mime-types');
+const fs = require("fs");
+const path = require('path');
+const { promisify } = require('util');
+const removeFile = promisify(fs.unlink);
 module.exports = {
     add: async (req, res) => {
         let { body } = req;
@@ -82,13 +86,17 @@ module.exports = {
             throw new CustomError(errors.Missing_Value_Field);
         let newDbName = req.file.filename;
         let file = await new FileService({}).getFilePath(body.fileId);
-        console.log(req.file);
-        if (file.name != body.name)
+
+        if (file.name != body.name) {
+            let filesPath = "../../public/files/" + newDbName;
+            await removeFile(path.join(__dirname, filesPath));
             throw new CustomError(errors.Did_Not_Match_File_Name);
-
-        if (mime.lookup(file.path) != mime.lookup(req.file.path))
+        }
+        if (mime.lookup(file.path) != mime.lookup(req.file.path)) {
+            let filesPath = "../../public/files/" + newDbName;
+            await removeFile(path.join(__dirname, filesPath));
             throw new CustomError(errors.Did_Not_Match_File_Type);
-
+        }
         await new FileService({}).newDbName(body.fileId, newDbName, file.dbName);
         await new FileHistoryService({}).update(userId, body.fileId);
         responseSender(res, "Your File Has Been Uploaded Successfully");
@@ -101,7 +109,7 @@ module.exports = {
         const { fileId, groupId } = req.body;
         const { userId, isAdmin } = req;
         let isHeGroupOwner = await new GroupService({}).isHeGroupOwner(groupId, userId);
-        if (!isHeGroupOwner && !isAdmin)
+        if (!isHeGroupOwner && isAdmin == false)
             throw new CustomError(errors.Not_GroupOwner);
         await new GroupFilesService({}).deleteFile(fileId);
         await new FileService({}).deleteFile(fileId);
@@ -123,7 +131,7 @@ module.exports = {
     userStatistics: async (req, res) => {
         const { userId, body, isAdmin } = req;
         const isHeGroupOwner = await new GroupService({}).isHeGroupOwner(body.groupId, userId);
-        if (!isHeGroupOwner && !isAdmin)
+        if (!isHeGroupOwner && isAdmin == false)
             throw new CustomError(errors.Not_Authorized);
         const fileIds = await new GroupFilesService({}).getFilesOfGroup(body.groupId);
         const stats = await new FileHistoryService({}).userStatictics(body.userId, fileIds);
@@ -139,7 +147,7 @@ module.exports = {
     writeUserStatsToCSV: async (req, res) => {
         const { userId, body, isAdmin } = req;
         const isHeGroupOwner = await new GroupService({}).isHeGroupOwner(body.groupId, userId);
-        if (!isHeGroupOwner && !isAdmin)
+        if (!isHeGroupOwner && isAdmin == false)
             throw new CustomError(errors.Not_Authorized);
         const fileIds = await new GroupFilesService({}).getFilesOfGroup(body.groupId);
         const stats = await new FileHistoryService({}).userStatictics(body.userId, fileIds);

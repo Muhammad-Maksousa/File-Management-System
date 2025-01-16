@@ -4,17 +4,17 @@ exports.auditLogger = (req, res, next) => {
     try {
         let originalJson = res.json;
         res.json = async function (body) {
-            /*console.log("inside");
-            console.log(JSON.stringify(req.method));
-            console.log(JSON.stringify(req.url));
-             console.log(req.params);
-             console.log(req.query);
-             console.log(req.body);
-            console.log(JSON.stringify(req.userId));
-            console.log("--------------");
-            console.log(JSON.stringify(body.data));
-            console.log("--------------------");*/
-            return originalJson.call(this,body);
+            if ((req.method == "GET" && Object.keys(req.params).length > 0) || req.method == "POST" || req.method == "PUT") {
+                await AuditLog.create({
+                    url: req.originalUrl,
+                    method: req.method,
+                    requestParams: JSON.stringify(req.params),
+                    requestBody: JSON.stringify(req.body),
+                    response: JSON.stringify(body),
+                    userId: req.userId
+                });
+            }
+            return originalJson.call(this, body);
         }
         next();
     } catch (error) {

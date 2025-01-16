@@ -20,4 +20,5 @@ router.get("/myOwnGroups", apiHandler(verifyUserToken), apiHandler(controller.ge
 router.get("/all", apiHandler(controller.allUsers));
 router.get("/block/:userId",apiHandler(verifyUserToken) ,apiHandler(controller.block));
 router.get("/unBlock/:userId",apiHandler(verifyUserToken) ,apiHandler(controller.unBlock));
+router.get("/logs", apiHandler(controller.getLogs));
 module.exports = router;

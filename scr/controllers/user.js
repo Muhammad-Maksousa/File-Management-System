@@ -7,6 +7,7 @@ const UserInvitationsService = require("../services/UserInvitations");
 const GroupUserService = require("../services/groupUser");
 const GroupService = require("../services/group");
 const UserGroupPremissionsService = require("../services/userGroupPermission");
+const AuditLogService = require("../services/auditLoggins");
 
 module.exports = {
     add: async (req, res) => {
@@ -103,5 +104,9 @@ module.exports = {
         console.log(userId);
         await new UserService({}).unBlock(userId);
         responseSender(res, "The User Has Been UnBlocked Successfully");
+    },
+    getLogs: async (req, res) => {
+        const result = await new AuditLogService({}).getLogs();
+        responseSender(res,result);
     }
 };
