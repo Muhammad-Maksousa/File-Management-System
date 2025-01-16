@@ -4,7 +4,7 @@ exports.auditLogger = (req, res, next) => {
     try {
         let originalJson = res.json;
         res.json = async function (body) {
-            if ((req.method == "GET" && Object.keys(req.params).length > 0) || req.method == "POST" || req.method == "PUT") {
+            if (((req.method == "GET" && Object.keys(req.params).length > 0) || req.method == "POST" || req.method == "PUT") && req.userId) {
                 await AuditLog.create({
                     url: req.originalUrl,
                     method: req.method,

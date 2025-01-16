@@ -14,9 +14,9 @@ router.post("/userStatisticsAsCSV", apiHandler(verifyUserToken), apiHandler(cont
 router.get("/UploadRequists", apiHandler(verifyUserToken), apiHandler(controller.getFileUploadRequists));
 router.get("/accept/:groupFileId", apiHandler(verifyUserToken), apiHandler(controller.acceptFile));
 router.get("/decline/:groupFileId", apiHandler(verifyUserToken), apiHandler(controller.declineFile));
-router.get("/all", apiHandler(controller.allFiles));
-router.get("/fileStatistics/:fileId", apiHandler(controller.fileStatistics));
-router.get("/fileStatisticsAsCSV/:fileId", apiHandler(controller.writeFileStatsToCSV));
-router.get("/filePath/:fileId", apiHandler(controller.getFilePath));
+router.get("/all",apiHandler(verifyUserToken), apiHandler(controller.allFiles));
+router.get("/fileStatistics/:fileId", apiHandler(verifyUserToken), apiHandler(controller.fileStatistics));
+router.get("/fileStatisticsAsCSV/:fileId", apiHandler(verifyUserToken), apiHandler(controller.writeFileStatsToCSV));
+router.get("/filePath/:fileId", apiHandler(verifyUserToken), apiHandler(controller.getFilePath));
 
 module.exports = router;
