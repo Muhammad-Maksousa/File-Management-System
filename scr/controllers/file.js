@@ -136,7 +136,7 @@ module.exports = {
         const fileIds = await new GroupFilesService({}).getFilesOfGroup(body.groupId);
         const stats = await new FileHistoryService({}).userStatictics(body.userId, fileIds);
         const group = await new GroupService({}).getBasicInfo(body.groupId);
-        const user = await new UserService({}).getBasicInfo(userId);
+        const user = await new UserService({}).getBasicInfo(body.userId);
         let result = {
             userInfo: user,
             groupInfo: group,
